@@ -1,2 +1,3 @@
-# homography_ranking
-An implementation of the homography ranking algorithm.
+# Homography Ranking
+
+An implementation of the **homography ranking** algorithm.
