@@ -35,17 +35,16 @@ from common.dtypes import ShapeT
 
 
 class ImageTransformer(abc.ABC):
-    """
-    An abstract image transformer that allows to transform images or just
+    """An abstract image transformer that allows to transform images or just
     points.
     """
     
     @abc.abstractmethod
     def transform_image(
             self, img: np.ndarray, output_shape: Optional[ShapeT] = None,
-            adaptive_output_shape: bool = False) -> np.ndarray:
-        """
-        Transforms an image using the transformation properties with which
+            adaptive_output_shape: bool = False
+    ) -> np.ndarray:
+        """Transforms an image using the transformation properties with which
         an instance was built.
 
         :param img: a NumPy image to be transformed
@@ -62,9 +61,9 @@ class ImageTransformer(abc.ABC):
     @abc.abstractmethod
     def transform_points(
             self, points: np.ndarray, img_shape: ShapeT,
-            adaptive_output_shape: bool = False) -> np.ndarray:
-        """
-        Transforms points using the transformation properties with which an
+            adaptive_output_shape: bool = False
+    ) -> np.ndarray:
+        """Transforms points using the transformation properties with which an
         instance was built.
 
         :param points: one or more points to be transformed
@@ -84,8 +83,7 @@ class HomographyTransformer(ImageTransformer, abc.ABC):
     @property
     @abc.abstractmethod
     def homography(self) -> np.ndarray:
-        """
-        Return the corresponding homography matrix performing the
+        """Return the corresponding homography matrix performing the
         transformation.
 
         :return: the homography matrix
@@ -123,9 +121,9 @@ class HomographyTransformer(ImageTransformer, abc.ABC):
     
     @abc.abstractmethod
     def _build_homography(
-            self, img_shape: Optional[ShapeT] = None) -> np.ndarray:
-        """
-        Builds a homography matrix.
+            self, img_shape: Optional[ShapeT] = None
+    ) -> np.ndarray:
+        """Builds a homography matrix.
 
         :param img_shape: image shape with respect to which the transformation
         should take place
@@ -136,12 +134,17 @@ class HomographyTransformer(ImageTransformer, abc.ABC):
     @staticmethod
     def _adapt_homography_for_shape(
             homography: np.ndarray,
-            img_shape: ShapeT) -> Tuple[np.ndarray, ShapeT]:
+            img_shape: ShapeT
+    ) -> Tuple[np.ndarray, ShapeT]:
         corners = np.float32((
-            (0, 0), (img_shape[1] - 1, 0),
-            (img_shape[1] - 1, img_shape[0] - 1), (0, img_shape[0] - 1)))
+            (0, 0),
+            (img_shape[1] - 1, 0),
+            (img_shape[1] - 1, img_shape[0] - 1),
+            (0, img_shape[0] - 1)
+        ))
         corners_transformed = HomographyTransformer._transform_points(
-            corners, homography)
+            corners, homography
+        )
         
         min_vals = np.min(corners_transformed, axis=0)
         max_vals = np.max(corners_transformed, axis=0)
@@ -149,9 +152,11 @@ class HomographyTransformer(ImageTransformer, abc.ABC):
         x_min, y_min = min_vals[0], min_vals[1]
         x_max, y_max = max_vals[0], max_vals[1]
         
-        translation_mat = np.array(((1, 0, -x_min),
-                                    (0, 1, -y_min),
-                                    (0, 0, 1)))
+        translation_mat = np.array((
+            (1, 0, -x_min),
+            (0, 1, -y_min),
+            (0, 0, 1)
+        ))
         homography = translation_mat.dot(homography)
         
         new_width, new_height = x_max - x_min, y_max - y_min
@@ -161,6 +166,8 @@ class HomographyTransformer(ImageTransformer, abc.ABC):
     
     @staticmethod
     def _transform_points(
-            points: np.ndarray, homography: np.ndarray) -> np.ndarray:
+            points: np.ndarray, homography: np.ndarray
+    ) -> np.ndarray:
         return np.squeeze(
-            cv.perspectiveTransform(points.reshape(-1, 1, 2), homography), 1)
+            cv.perspectiveTransform(points.reshape(-1, 1, 2), homography), 1
+        )

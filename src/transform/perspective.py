@@ -33,13 +33,11 @@ from transform.base import HomographyTransformer
 
 
 class PerspectiveTransformer(HomographyTransformer):
-    """
-    A perspective transformer that applies a homography transformation.
+    """A perspective transformer that applies a homography transformation.
     """
     
     def __init__(self, homography: np.ndarray) -> None:
-        """
-        Constructor.
+        """Constructor.
 
         :param homography: a homography matrix performing the perspective
         transformation
@@ -54,9 +52,9 @@ class PerspectiveTransformer(HomographyTransformer):
     @staticmethod
     def build_from_correspondences(
             src_points: np.ndarray,
-            dst_points: np.ndarray) -> 'PerspectiveTransformer':
-        """
-        Builds a homography transformation based upon multiple (at least 4)
+            dst_points: np.ndarray
+    ) -> 'PerspectiveTransformer':
+        """Builds a homography transformation based upon multiple (at least 4)
         point correspondences between two planes.
 
         :param src_points: points in the source plane
@@ -64,7 +62,8 @@ class PerspectiveTransformer(HomographyTransformer):
         :return: an instance of the :class:`PerspectiveTransformer`
         """
         return PerspectiveTransformer(
-            cv.findHomography(src_points, dst_points, method=cv.RANSAC)[0])
+            cv.findHomography(src_points, dst_points, method=cv.RANSAC)[0]
+        )
     
     def _build_homography(self, img_shape: ShapeT = None) -> np.ndarray:
         return self._homography

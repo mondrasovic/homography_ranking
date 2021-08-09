@@ -61,12 +61,15 @@ def _grouped_boxplots(data_groups, ax=None, max_width=0.8, pad=0.05, **kwargs):
     return artists
 
 
-def _plot_improvement_over_baseline_boxes(ax, data_groups, labels, x_label_suffix=""):
+def _plot_improvement_over_baseline_boxes(
+        ax, data_groups, labels, x_label_suffix="", ax_y_lim=None
+):
     assert data_groups.shape[1] == len(labels)
     
     baseline_artist = ax.axhline(
         0, label="baseline", alpha=0.8, linestyle='--',
-        linewidth=1, aa=True)
+        linewidth=1, aa=True
+    )
     for sep_pos in (np.arange(1, len(data_groups)) + 0.5):
         ax.axvline(sep_pos, alpha=0.5, linewidth=0.5, c='black', aa=True)
     
@@ -74,37 +77,47 @@ def _plot_improvement_over_baseline_boxes(ax, data_groups, labels, x_label_suffi
     groups = _grouped_boxplots(
         data_groups, ax, max_width=0.6, patch_artist=True, notch=False,
         meanline=True, showmeans=True, showfliers=False,
-        meanprops=meanlineprops, whis=0.5)
+        meanprops=meanlineprops, whis=0.5
+    )
     
     colors = plt.rcParams['axes.prop_cycle'].by_key()['color']
     for item in groups:
         assert len(item['boxes']) <= len(colors)
         
         for color, patch, median_line in zip(
-                colors, item['boxes'], item['medians']):
+                colors, item['boxes'], item['medians']
+        ):
             patch.set(facecolor=color, alpha=0.8)
             plt.setp(median_line, color='black')
     
     x_tick_labels = list(map(str, range(1, len(data_groups) + 1)))
     ax.yaxis.set_major_formatter(ticker.FuncFormatter(lambda y, _: f'{y:.0%}'))
+    
+    if ax_y_lim:
+        ax.set_ylim(ax_y_lim)
+        ax.set_yticks([-2, -1.5, -1, -0.5, 0, 0.5, 1])
+    
     ax.set(
         xlabel="Used $k$-th best homography" + x_label_suffix,
-        ylabel="Percentage improvement",
+        ylabel="Relative improvement",
         axisbelow=True, xticklabels=x_tick_labels)
     proxy_artists = groups[-1]['boxes']
     ax.legend(
         proxy_artists + [baseline_artist], labels + ['baseline'],
-        loc='lower left', prop={'size': 8})
+        loc='lower left', prop={'size': 8}
+    )
     ax.spines['top'].set_visible(False)
     ax.spines['right'].set_visible(False)
     ax.grid(False)
 
 
 def plot_improvement_over_baseline_boxes(
-        data_groups, labels, x_label_suffix=""):
+        data_groups, labels, x_label_suffix="", ax_y_lim=None
+):
     fig, ax = plt.subplots(figsize=(5, 3))
     _plot_improvement_over_baseline_boxes(
-        ax, data_groups, labels, x_label_suffix)
+        ax, data_groups, labels, x_label_suffix, ax_y_lim
+    )
     fig.tight_layout()
     
     return fig
@@ -113,7 +126,8 @@ def plot_improvement_over_baseline_boxes(
 def _add_stats_plot(data, ax):
     min_val, max_val, mean, std_dev, median = (
         np.min(data), np.max(data), np.mean(data), np.std(data),
-        np.median(data))
+        np.median(data)
+    )
     
     props = dict(boxstyle='round', facecolor='wheat', alpha=0.8)
     text_str = '\n'.join((
@@ -122,16 +136,19 @@ def _add_stats_plot(data, ax):
         rf"$\mathrm{{max}} ={max_val:.3f}$",
         rf"$\mu ={mean:.3f}$",
         rf"$\sigma = {std_dev:.3f}$",
-        rf"$\mathrm{{median}} = {median:.3f}$"))
+        rf"$\mathrm{{median}} = {median:.3f}$")
+    )
     
     ax.text(
         0.02, 0.97, text_str, transform=ax.transAxes, fontdict=None,
-        verticalalignment='top', bbox=props)
+        verticalalignment='top', bbox=props
+    )
 
 
 def plot_heat_map(
         error_grid, boxes=None, color=0.5, colorbar_range=None,
-        x_label_suffix=""):
+        x_label_suffix=""
+):
     if isinstance(color, numbers.Number):
         color = [color]
     

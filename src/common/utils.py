@@ -31,10 +31,9 @@ import numpy as np
 
 
 def rand_uniform(
-        a: float, b: float,
-        size: Optional[Any] = None) -> Union[float, np.ndarray]:
-    """
-    Generates a uniformly distributed number in the [a, b) interval.
+        a: float, b: float, size: Optional[Any] = None
+) -> Union[float, np.ndarray]:
+    """Generates a uniformly distributed number in the [a, b) interval.
     
     :param a: interval lower bound (inclusive)
     :param b: interval upper bound (exclusive)

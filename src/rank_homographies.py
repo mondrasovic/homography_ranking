@@ -35,54 +35,61 @@
 # SOFTWARE.
 
 import sys
+from typing import cast, Optional, Sequence
+
 import click
-
-from typing import Optional, cast, Sequence
-
-import numpy as np
 import cv2 as cv
+import numpy as np
 
 from transform.homographyranking import rank_homographies
 
 
 def estimate_and_rank_homographies(
         warped_points_groups: np.ndarray, target_points_groups: np.ndarray,
-        homographies: Optional[np.ndarray]) -> Sequence[int]:
+        homographies: Optional[np.ndarray]
+) -> Sequence[int]:
     if homographies is None:
         homographies = []
         
         for warped_points, target_points in zip(
-                warped_points_groups, target_points_groups):
+                warped_points_groups, target_points_groups
+        ):
             homography, _ = cv.findHomography(
-                warped_points, target_points, method=cv.RANSAC)
+                warped_points, target_points, method=cv.RANSAC
+            )
             homographies.append(homography)
     
     homographies = np.asarray(homographies)
     
     ranking = rank_homographies(
-        warped_points_groups, target_points_groups, homographies)
+        warped_points_groups, target_points_groups, homographies
+    )
     
     return ranking
+
 
 @click.command()
 @click.argument("warped_points_path", type=click.Path())
 @click.argument("target_points_path", type=click.Path())
 @click.option(
     "-o", "--output-path", type=click.Path(),
-    help="Output file to save the ordering to as comma-separated integers.")
+    help="Output file to save the ordering to as comma-separated integers."
+)
 @click.option(
     "-h", "--homographies", type=click.Path(),
     help="NumPy file containing homographies as Gx3x3 floating-point tensor,"
-         "where G is the same as in the WARPED_PTS shape GxKx2.")
+         "where G is the same as in the WARPED_PTS shape GxKx2."
+)
 @click.option(
     "-v", "--verbose", is_flag=True,
-    help="Enables verbose mode to print more information.")
+    help="Enables verbose mode to print more information."
+)
 def main(
         warped_points_path: click.Path, target_points_path: click.Path,
         output_path: click.Path, homographies: Optional[click.Path],
-        verbose: bool) -> int:
-    """
-    This application is licensed under the MIT license.
+        verbose: bool
+) -> int:
+    """This application is licensed under the MIT license.
     
     Copyright (c) 2021 Milan Ondrasovic
     
@@ -113,10 +120,12 @@ def main(
     target_points = np.load(cast(str, target_points_path))
     
     target_points = np.repeat(
-        target_points[None, ...], repeats=len(warped_points), axis=0)
+        target_points[None, ...], repeats=len(warped_points), axis=0
+    )
     
     ranking = estimate_and_rank_homographies(
-        warped_points, target_points, homographies)
+        warped_points, target_points, homographies
+    )
     indices = ",".join(map(str, ranking))
     
     if output_path:

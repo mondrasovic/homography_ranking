@@ -24,6 +24,7 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
+
 import abc
 import itertools
 
@@ -81,13 +82,14 @@ if __name__ == '__main__':
     
     import cv2 as cv
     
+    
     win_name = "Shape generating"
     
     img_width, img_height, image_depth = 1000, 1000, 3
     img_shape = (img_height, img_width, image_depth)
     shape_center = np.array((img_width // 2, img_height // 2))
     radius = min(img_width, img_height) // 4
-    n_vertices = 8
+    n_vertices = 5
     
     
     def update_image():

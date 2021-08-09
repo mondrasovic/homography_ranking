@@ -119,7 +119,7 @@ class Scale(GroupTransformation):
     allows the scaling origin to be adjusted (for example, if points should be
     scaled with respect to their centroid).
     """
-    
+
     def __init__(
             self, factor: ScaleFactorT = 1.0,
             origin: Optional[np.ndarray] = None, *,
@@ -140,7 +140,7 @@ class Scale(GroupTransformation):
         if not use_centroid and origin is None:
             self.origin = np.zeros(2)
         self.use_centroid: bool = use_centroid
-    
+
     def transform_points_group(self, points: np.ndarray) -> np.ndarray:
         # docstring inherited
         origin = np.mean(points, axis=0) if self.use_centroid else self.origin

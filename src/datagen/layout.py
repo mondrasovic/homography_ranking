@@ -35,7 +35,8 @@ from datagen.shape import ShapeGenerator
 
 def build_grid_layout(
         n_rows: int, n_cols: int, *, x_border: float = 0.2,
-        y_border: float = 0.2) -> List[PositionGenerator]:
+        y_border: float = 0.2
+) -> List[PositionGenerator]:
     assert n_rows > 0 and n_cols > 0
     assert 0 < x_border < 0.5 and 0 < y_border < 0.5
     
@@ -47,14 +48,14 @@ def build_grid_layout(
 
 
 class ShapesLayoutGenerator:
-    """
-    Generates vertices of given shape anchored in a specific layout.
+    """Generates vertices of given shape anchored in a specific layout.
     """
     
     def __init__(
             self, img_width: int, img_height: int, shape_gen: ShapeGenerator,
             position_gens: Iterable[PositionGenerator],
-            n_shapes: Optional[int] = None) -> None:
+            n_shapes: Optional[int] = None
+    ) -> None:
         self.img_width: int = img_width
         self.img_height: int = img_height
         
@@ -69,14 +70,16 @@ class ShapesLayoutGenerator:
     def generate_points(self) -> np.ndarray:
         points = map(
             self.shape_gen.generate_points,
-            self._generate_center_points())
+            self._generate_center_points()
+        )
         points = np.array(tuple(points), dtype=np.float)
         
         # Select only a random subset of the points.
         if self.n_shapes is not None:
             shapes_num = min(len(points), self.n_shapes)
             selector = np.array(
-                [True] * shapes_num + [False] * (len(points) - shapes_num))
+                [True] * shapes_num + [False] * (len(points) - shapes_num)
+            )
             np.random.shuffle(selector)
             points = points[selector]
         
@@ -86,4 +89,5 @@ class ShapesLayoutGenerator:
         return map(
             lambda g: g.generate_absolute_position(
                 self.img_width, self.img_height),
-            self.position_gens)
+            self.position_gens
+        )

@@ -30,8 +30,8 @@ import unittest
 import numpy as np
 
 from transform.homographyranking import (
-    _convert_to_homogeneous, _transform_points, _eval_reprojection_error,
-    _transform_points_groups_stacked
+    _convert_to_homogeneous, _eval_reprojection_error, _transform_points,
+    _transform_points_groups_stacked,
 )
 
 
@@ -127,7 +127,7 @@ class TestHomographyRanking(unittest.TestCase):
         with self.assertRaises(ValueError):
             points = np.ones((2,), dtype=np.float32)
             _transform_points(points, self.identity_homography)
-
+    
     def test_transform_points_3_dims(self):
         with self.assertRaises(ValueError):
             points = np.ones((2, 4, 2), dtype=np.float32)
@@ -184,7 +184,8 @@ class TestHomographyRanking(unittest.TestCase):
         ])
         
         points_transformed = _transform_points_groups_stacked(
-            self.identity_homography, affine_matrices, points_groups)
+            self.identity_homography, affine_matrices, points_groups
+        )
         
         self.assertEqual(points_transformed.tolist(), [
             [

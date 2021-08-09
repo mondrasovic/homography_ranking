@@ -25,6 +25,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+import sys
 import numpy as np
 
 import config
@@ -46,9 +47,11 @@ def get_img_pix_coords_matrix(img_shape: ShapeT) -> np.ndarray:
     pixels
     """
     cols, rows = np.meshgrid(
-        np.arange(img_shape[1]), np.arange(img_shape[0]))
+        np.arange(img_shape[1]), np.arange(img_shape[0])
+    )
     return np.concatenate(
-        (cols[..., None], rows[..., None]), axis=2).reshape(-1, 2)
+        (cols[..., None], rows[..., None]), axis=2
+    ).reshape(-1, 2)
 
 
 def rand_rotate_angles(points: np.ndarray) -> float:
@@ -72,27 +75,30 @@ def main() -> int:
     
     img_shape_orig = (config.IMG_HEIGHT, config.IMG_WIDTH)
     img = np.zeros(img_shape_orig)
-    pix_coords_orig = get_img_pix_coords_matrix(
-        img.shape).astype(np.float)
+    pix_coords_orig = get_img_pix_coords_matrix(img.shape).astype(np.float)
     
     rotation_range = config.IMG_ROTATION_RANGE
     rotation_gen = Rotation3DGenerator(
         x_axis_range=rotation_range, y_axis_range=rotation_range,
-        z_axis_range=rotation_range)
+        z_axis_range=rotation_range
+    )
     
     positions_gens = build_grid_layout(3, 3)
     
     rand_rotate = Rotation(rand_rotate_angles, use_centroid=True)
     rand_translate = Translation(rand_translation_coefs)
+    # Using non-uniform scale.
     rand_scale = Scale(rand_scale_coef, use_centroid=True)
     rand_noise = Translation(rand_noise_coefs)
     
     common_spec = CommonTestSpec(
         img_shape_orig, pix_coords_orig, rotation_gen, positions_gens,
-        rand_rotate, rand_translate, rand_scale, rand_noise)
+        rand_rotate, rand_translate, rand_scale, rand_noise
+    )
     
     rectangle_gen = RectangleGenerator(
-        config.SHAPE_BOX_WIDTH, config.SHAPE_BOX_HEIGHT)
+        config.SHAPE_BOX_WIDTH, config.SHAPE_BOX_HEIGHT
+    )
     radius = min(config.SHAPE_BOX_WIDTH, config.SHAPE_BOX_HEIGHT) / 2
     polygon_5_gen = PolygonGenerator(radius, 5)
     polygon_7_gen = PolygonGenerator(radius, 7)
@@ -103,7 +109,8 @@ def main() -> int:
     def _scenario(**kwargs) -> TestScenarioSpec:
         nonlocal scenario_id
         scenario = TestScenarioSpec(
-            id=scenario_id, common=common_spec, **kwargs)
+            id=scenario_id, common=common_spec, **kwargs
+        )
         scenario_id += 1
         return scenario
     
@@ -121,29 +128,35 @@ def main() -> int:
         _scenario(use_noise=True, **std_shape, **all_affine),
         
         _scenario(
-            use_noise=True, shape_gen=polygon_5_gen, n_groups=6, **all_affine),
+            use_noise=True, shape_gen=polygon_5_gen, n_groups=6, **all_affine
+        ),
         _scenario(
-            use_noise=True, shape_gen=polygon_7_gen, n_groups=6, **all_affine),
+            use_noise=True, shape_gen=polygon_7_gen, n_groups=6, **all_affine
+        ),
         _scenario(
-            use_noise=True, shape_gen=polygon_9_gen, n_groups=6, **all_affine),
-        
+            use_noise=True, shape_gen=polygon_9_gen, n_groups=6, **all_affine
+        ),
+
         _scenario(
-            use_noise=True, shape_gen=rectangle_gen, n_groups=3, **all_affine),
+            use_noise=True, shape_gen=rectangle_gen, n_groups=3, **all_affine
+        ),
         _scenario(
-            use_noise=True, shape_gen=rectangle_gen, n_groups=5, **all_affine),
+            use_noise=True, shape_gen=rectangle_gen, n_groups=5, **all_affine
+        ),
         _scenario(
-            use_noise=True, shape_gen=rectangle_gen, n_groups=7, **all_affine),
+            use_noise=True, shape_gen=rectangle_gen, n_groups=7, **all_affine
+        ),
         _scenario(
-            use_noise=True, shape_gen=rectangle_gen, n_groups=9, **all_affine),
+            use_noise=True, shape_gen=rectangle_gen, n_groups=9, **all_affine
+        ),
     )
     
     run_experiments(
-        scenarios, config.RESULTS_FILE_PATH, config.N_INSTANCES_PER_SCENARIO)
+        scenarios, config.RESULTS_FILE_PATH, config.N_INSTANCES_PER_SCENARIO
+    )
     
     return 0
 
 
 if __name__ == '__main__':
-    import sys
-    
     sys.exit(main())
