@@ -32,15 +32,14 @@ from transform.rotation import Rotation3DTransformer
 
 
 class Rotation3DGenerator:
-    """
-    A generator that randomly initiates a 3D rotation transformer.
+    """A generator that randomly initiates a 3D rotation transformer.
     """
     
     def __init__(
             self, x_axis_range: RangeT, y_axis_range: RangeT,
-            z_axis_range: RangeT) -> None:
-        """
-        Constructor.
+            z_axis_range: RangeT
+    ) -> None:
+        """Constructor.
 
         :param x_axis_range: range for the random uniform rotation in the x-axis
         :param y_axis_range: range for the random uniform rotation in the y-axis
@@ -51,8 +50,7 @@ class Rotation3DGenerator:
         self.z_axis_range: RangeT = z_axis_range
     
     def build_transformer(self) -> HomographyTransformer:
-        """
-        Randomly initializes a 3D rotation transformer.
+        """Randomly initializes a 3D rotation transformer.
 
         :return: a 3D rotation transformer
         """

@@ -36,9 +36,10 @@ DimensionT = Union[int, float]
 
 class PositionGenerator(abc.ABC):
     def generate_absolute_position(
-            self, width: DimensionT, height: DimensionT) -> np.ndarray:
-        return (np.array((width, height), dtype=np.float) *
-                self.generate_relative_position())
+            self, width: DimensionT, height: DimensionT
+    ) -> np.ndarray:
+        relative_pos = self.generate_relative_position()
+        return np.array((width, height), dtype=np.float) * relative_pos
     
     @abc.abstractmethod
     def generate_relative_position(self) -> np.ndarray:

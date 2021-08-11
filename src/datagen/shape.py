@@ -56,7 +56,8 @@ class RectangleGenerator(ShapeGenerator):
         bottom_right = (top_right[0], bottom_left[1])
         
         return np.array(
-            (top_left, top_right, bottom_right, bottom_left), dtype=np.float)
+            (top_left, top_right, bottom_right, bottom_left), dtype=np.float
+        )
 
 
 class PolygonGenerator(ShapeGenerator):
@@ -71,7 +72,8 @@ class PolygonGenerator(ShapeGenerator):
     def generate_points(self, shape_center: np.ndarray) -> np.ndarray:
         step = np.pi * 2 / self.n_vertices
         angles = np.fromiter(
-            itertools.count(0, step), np.float, self.n_vertices)
+            itertools.count(0, step), np.float, self.n_vertices
+        )
         xs, ys = np.cos(angles), np.sin(angles)
         points = np.stack((xs, ys)) * self.radius + shape_center[..., None]
         return points.T
@@ -81,7 +83,6 @@ if __name__ == '__main__':
     import functools
     
     import cv2 as cv
-    
     
     win_name = "Shape generating"
     
@@ -99,7 +100,8 @@ if __name__ == '__main__':
         points = points.round().astype(np.int)
         cv.polylines(
             image, [points], True, color=(0, 255, 0), thickness=3,
-            lineType=cv.LINE_AA)
+            lineType=cv.LINE_AA
+        )
         cv.imshow(win_name, image)
     
     
@@ -118,12 +120,15 @@ if __name__ == '__main__':
     cv.namedWindow(win_name)
     cv.createTrackbar(
         "center X", win_name, shape_center[0], img_width,
-        functools.partial(on_shape_center_trackbar_change, 0))
+        functools.partial(on_shape_center_trackbar_change, 0)
+    )
     cv.createTrackbar(
         "center Y", win_name, shape_center[1], img_height,
-        functools.partial(on_shape_center_trackbar_change, 1))
+        functools.partial(on_shape_center_trackbar_change, 1)
+    )
     cv.createTrackbar(
-        "radius", win_name, radius, img_width, on_radius_trackbar_change)
+        "radius", win_name, radius, img_width, on_radius_trackbar_change
+    )
     
     update_image()
     

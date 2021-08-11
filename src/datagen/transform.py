@@ -37,15 +37,13 @@ AngleT = Union[Callable[[np.ndarray], float], float]
 
 
 class Transformation(abc.ABC):
-    """
-    A general transformation that is applied for an array of points
+    """A general transformation that is applied for an array of points
     (pixel coordinates).
     """
     
     @abc.abstractmethod
     def transform(self, points: np.ndarray) -> np.ndarray:
-        """
-        Transforms an array of points (pixel coordinates).
+        """Transforms an array of points (pixel coordinates).
         
         :param points: points to transform
         """
@@ -53,8 +51,7 @@ class Transformation(abc.ABC):
 
 
 class GroupTransformation(Transformation, abc.ABC):
-    """
-    A general transformation that allows to transform entire groups of
+    """A general transformation that allows to transform entire groups of
     points, i.e. a 3D tensor, not just a single 2D array.
     """
     
@@ -69,8 +66,7 @@ class GroupTransformation(Transformation, abc.ABC):
     
     @abc.abstractmethod
     def transform_points_group(self, points: np.ndarray) -> np.ndarray:
-        """
-        Transforms a single 2D groups of points.
+        """Transforms a single 2D groups of points.
 
         :param points: points to transform
         """
@@ -78,8 +74,7 @@ class GroupTransformation(Transformation, abc.ABC):
 
 
 class Identity(Transformation):
-    """
-    Identity transformation. Causes no modification.
+    """Identity transformation. Causes no modification.
     """
     
     def transform(self, points: np.ndarray) -> np.ndarray:
@@ -88,16 +83,14 @@ class Identity(Transformation):
 
 
 class Translation(GroupTransformation):
-    """
-    Translation transformation. Translates (shifts) the points in a
+    """Translation transformation. Translates (shifts) the points in a
     specific way. A custom shift generator may be supplied (for instance,
     to obtain a random shift according to some probability distribution),
     or a fixed point.
     """
     
     def __init__(self, coord_shift: CoordShiftT) -> None:
-        """
-        Constructor.
+        """Constructor.
 
         :param coord_shift: specifies the translation either as a fixed point or
         a callable that takes the current points as an input and returns a new
@@ -114,8 +107,7 @@ class Translation(GroupTransformation):
 
 
 class Scale(GroupTransformation):
-    """
-    Scaling transformation. Multiplies points by a specific factor. It
+    """Scaling transformation. Multiplies points by a specific factor. It
     allows the scaling origin to be adjusted (for example, if points should be
     scaled with respect to their centroid).
     """
@@ -123,9 +115,9 @@ class Scale(GroupTransformation):
     def __init__(
             self, factor: ScaleFactorT = 1.0,
             origin: Optional[np.ndarray] = None, *,
-            use_centroid: bool = False) -> None:
-        """
-        Constructor.
+            use_centroid: bool = False
+    ) -> None:
+        """Constructor.
 
         :param factor: a positive factor to scale the points by, or a callable
         that returns a scale factor for the current batch of points
@@ -152,16 +144,15 @@ class Scale(GroupTransformation):
 
 
 class Rotation(GroupTransformation):
-    """
-    Rotate point(s) counterclockwise by a given angle around a given origin.
+    """Rotate point(s) counterclockwise by a given angle around a given origin.
     The angle is assumed to be in radians.
     """
     
     def __init__(
             self, angle: AngleT = 0.0, origin: Optional[np.ndarray] = None, *,
-            use_centroid: bool = False) -> None:
-        """
-        Constructor.
+            use_centroid: bool = False
+    ) -> None:
+        """Constructor.
 
         :param angle: angle in radians by which to rotate the points or a
         callable that returns an angle for the current batch of points
@@ -188,9 +179,9 @@ class Rotation(GroupTransformation):
     
     @staticmethod
     def rotate_points(
-            points: np.ndarray, angle: float, origin: np.ndarray) -> np.ndarray:
-        """
-        Rotate point(s) counterclockwise by a given angle around a given
+            points: np.ndarray, angle: float, origin: np.ndarray
+    ) -> np.ndarray:
+        """Rotate point(s) counterclockwise by a given angle around a given
         origin. The angle is assumed to be in radians.
 
         :param points: point(s) to rotate
@@ -200,23 +191,24 @@ class Rotation(GroupTransformation):
         """
         sin_val, cos_val = np.sin(angle), np.cos(angle)
         
-        rotation_matrix = np.array(((cos_val, -sin_val),
-                                    (sin_val, cos_val)))
+        rotation_matrix = np.array((
+            (cos_val, -sin_val),
+            (sin_val, cos_val)
+        ))
         origin = np.atleast_2d(origin)
         points = np.atleast_2d(points)
         
         return np.squeeze(
-            (rotation_matrix @ (points.T - origin.T) + origin.T).T)
+            (rotation_matrix @ (points.T - origin.T) + origin.T).T
+        )
 
 
 class Pipeline(Transformation):
-    """
-    A pipeline composed of multiple transformations.
+    """A pipeline composed of multiple transformations.
     """
     
     def __init__(self, *args: Transformation) -> None:
-        """
-        Constructor.
+        """Constructor.
 
         :param args: individual transformations to compose the pipeline from
         (order of execution is preserved)
