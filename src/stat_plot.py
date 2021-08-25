@@ -91,7 +91,15 @@ def _plot_improvement_over_baseline_boxes(
             plt.setp(median_line, color='black')
     
     x_tick_labels = list(map(str, range(1, len(data_groups) + 1)))
-    ax.yaxis.set_major_formatter(ticker.FuncFormatter(lambda y, _: f'{y:.0%}'))
+    
+    def minus_percent_formatter_(y, pos):
+        text = f"{abs(y):.0%}"
+        if y < 0:
+            text = u'\u2212' + text
+        return text
+    
+    # ax.yaxis.set_major_formatter(ticker.FuncFormatter(lambda y, _: f'{y:.0%}'))
+    ax.yaxis.set_major_formatter(ticker.FuncFormatter(minus_percent_formatter_))
     
     if ax_y_lim:
         ax.set_ylim(ax_y_lim)

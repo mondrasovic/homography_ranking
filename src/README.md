@@ -8,7 +8,7 @@ algorithm.
 In order to run the experiments, the file ``experiment_runner.py`` has to be
 used. This script loads a configuration settings from the``config.py`` file.
 Subsequently, the specified experiments are executed to obtain a single file
-containing the results. This file can then be analyzed in the 
+containing the results. This file can then be analyzed in the
 ``stats_analysis.ipynb`` notebook.
 
 ## Running On Custom Data
